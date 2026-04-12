@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>우리 조 커스텀 티어 리스트</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+
+    <style>
+      /* 1. 전체 초기화 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Pretendard", sans-serif;
+        padding: 40px 20px;
+        background-color: #f4f4f5;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+      p {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      /* =========================================
+           [실습 1] 메인 레이아웃 (보드와 사이드 패널 가로 배치)
+           ========================================= */
+      .layout-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+
+        /* TODO 1: 보드와 사이드 패널을 가로로 배치하고, 공간이 좁아지면 자연스럽게 줄바꿈되도록 설정하세요. (간격: 20px) */
+        /* 💡 힌트: display, flex-wrap, gap 속성을 사용하세요. */
+      }
+
+      /* 2. 티어 리스트 보드 (좌측 넓은 영역) */
+      .tier-board {
+        background: #1e1e1e;
+        border-radius: 12px;
+        border: 2px solid #333;
+        overflow: hidden;
+
+        /* TODO 2: 남은 가로 공간을 꽉 채우도록 설정하고, 내부 행(Row)들이 세로로 쌓이도록 방향을 지정하세요. */
+        /* 💡 힌트: flex-grow와 flex-direction 속성이 필요합니다. (우선 display: flex; 를 선언하는 것도 잊지 마세요!) */
+      }
+
+      /* 3. 사이드 패널 (우측 미리보기 및 대기소 영역) */
+      .side-panel {
+        width: 320px; /* 고정 너비 */
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* =========================================
+           [실습 2] 티어 행 내부 배치
+           ========================================= */
+      .tier-row {
+        border-bottom: 2px solid #333;
+        min-height: 120px;
+
+        /* TODO 3: 좌측 등급 라벨과 우측 아이템 드롭 영역을 가로로 배치하세요. */
+        /* 💡 힌트: 요소를 가로로 나열하는 가장 기본적인 Flexbox 속성 1가지만 적용하면 됩니다. */
+      }
+      .tier-row:last-child {
+        border-bottom: none;
+      }
+
+      /* 티어 라벨 (좌측 등급 표시) */
+      .tier-label {
+        width: 120px;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0; /* 창이 줄어도 라벨 크기는 고정 */
+      }
+      .rank-s {
+        background-color: #ff7f7f;
+      }
+      .rank-a {
+        background-color: #ffbf7f;
+      }
+      .rank-b {
+        background-color: #ffff7f;
+      }
+      .rank-c {
+        background-color: #7fff7f;
+      }
+      .rank-d {
+        background-color: #7fbfff;
+      }
+
+      /* =========================================
+           [실습 3] 드롭 영역 및 아이템 정렬
+           ========================================= */
+      .tier-items,
+      .item-pool {
+        padding: 15px;
+        gap: 10px;
+      }
+      .tier-items {
+        background-color: #2b2b2b;
+
+        /* TODO 4: 아이템들을 가로로 나열하되 넘치면 줄바꿈되도록 하고, 라벨을 제외한 남은 공간을 꽉 채우세요. */
+        /* 💡 힌트: display, flex-wrap, flex-grow 세 가지 속성을 모두 조합해야 합니다. */
+      }
+
+      /* 아이템 대기소 */
+      .item-pool {
+        background-color: #e5e7eb;
+        border-radius: 12px;
+        min-height: 200px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      /* 미리보기 창 디자인 */
+      .preview-box {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        min-height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .preview-box img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+      .preview-box p {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #333;
+      }
+      .preview-placeholder {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      /* 개별 아이템 디자인 */
+      .item {
+        width: 80px;
+        height: 80px;
+        cursor: grab;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: transform 0.2s;
+      }
+      .item:hover {
+        transform: scale(1.05);
+        border: 2px solid #3b82f6;
+      }
+      .item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .item .item-name {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 0.7rem;
+        text-align: center;
+        padding: 4px 0;
+        pointer-events: none;
+      }
+
+      /* 4. 반응형 레이아웃 (Media Query) */
+      @media (max-width: 800px) {
+        .side-panel {
+          width: 100%;
+        } /* 모바일에서는 사이드 패널이 전체 너비 차지 */
+        .tier-row {
+          /* TODO 5: 모바일 화면에서는 라벨과 드롭 영역이 세로로 배치되도록 방향을 바꾸세요. */
+          /* 💡 힌트: flex-direction 속성을 활용하여 정렬 축을 세로 방향으로 변경하세요. */
+        }
+        .tier-label {
+          width: 100%;
+          height: 50px;
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🏆 우리 조 커스텀 티어 리스트</h1>
+      <p>우리 조원들이 직접 선정한 10개 내외의 항목을 평가해 봅시다.</p>
+    </header>
+
+    <div class="layout-wrapper">
+      <main class="tier-board">
+        <div class="tier-row">
+          <div class="tier-label rank-s">S</div>
+          <div
+            class="tier-items"
+            ondrop="drop(event)"
+            ondragover="allowDrop(event)"
+          ></div>
+        </div>
+        <div class="tier-row">
+          <div class="tier-label rank-a">A</div>
+          <div
+            class="tier-items"
+            ondrop="drop(event)"
+            ondragover="allowDrop(event)"
+          ></div>
+        </div>
+        <div class="tier-row">
+          <div class="tier-label rank-b">B</div>
+          <div
+            class="tier-items"
+            ondrop="drop(event)"
+            ondragover="allowDrop(event)"
+          ></div>
+        </div>
+        <div class="tier-row">
+          <div class="tier-label rank-c">C</div>
+          <div
+            class="tier-items"
+            ondrop="drop(event)"
+            ondragover="allowDrop(event)"
+          ></div>
+        </div>
+        <div class="tier-row">
+          <div class="tier-label rank-d">D</div>
+          <div
+            class="tier-items"
+            ondrop="drop(event)"
+            ondragover="allowDrop(event)"
+          ></div>
+        </div>
+      </main>
+
+      <aside class="side-panel">
+        <div class="preview-box" id="previewBox">
+          <p class="preview-placeholder">
+            아이템에 마우스를 올리면<br />상세 정보가 표시됩니다.
+          </p>
+        </div>
+
+        <h2 style="font-size: 1.2rem; margin-bottom: 10px; color: #333">
+          📌 아이템 대기열
+        </h2>
+        <div
+          class="item-pool"
+          id="pool"
+          ondrop="drop(event)"
+          ondragover="allowDrop(event)"
+        >
+          <!-- 조원들이 전달해준 아이템 코드를 여기에 붙여넣습니다. -->
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+      function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+      }
+      function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        var draggedElement = document.getElementById(data);
+        if (
+          ev.target.classList.contains("tier-items") ||
+          ev.target.classList.contains("item-pool")
+        ) {
+          ev.target.appendChild(draggedElement);
+        } else if (ev.target.closest(".tier-items")) {
+          ev.target.closest(".tier-items").appendChild(draggedElement);
+        } else if (ev.target.closest(".item-pool")) {
+          ev.target.closest(".item-pool").appendChild(draggedElement);
+        }
+      }
+
+      // 아이템 미리보기 기능
+      function showPreview(element) {
+        var imgSrc = element.querySelector("img").src;
+        var itemName = element.querySelector(".item-name").innerText;
+        var preview = document.getElementById("previewBox");
+        preview.innerHTML =
+          '<img src="' +
+          imgSrc +
+          '" alt="미리보기 이미지"><p>' +
+          itemName +
+          "</p>";
+      }
+    </script>
+  </body>
+</html>
