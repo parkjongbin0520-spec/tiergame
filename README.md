@@ -6,6 +6,8 @@
 
 여기서 pa8e를 확인하세요
 
+[프랜차이즈 카페 브랜드 티어 리스트](https://parkjongbin0520-spec.github.io/tiergame/)
+
 ---
 
 ## 팀 프로젝트 할 일
