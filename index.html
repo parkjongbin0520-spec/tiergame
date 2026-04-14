@@ -342,7 +342,7 @@ flex-flow: column warp;
         ev.preventDefault();
       }
       function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
+ev.dataTransfer.setData("text", ev.currentTarget.id);
       }
       function drop(ev) {
         ev.preventDefault();
